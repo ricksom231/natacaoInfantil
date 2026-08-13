@@ -13,13 +13,13 @@ const audienceCards = [
   ['Professor que quer variar mais as aulas', 'Para quem sente que está repetindo sempre as mesmas atividades e quer aumentar seu repertório.'],
 ];
 const bonuses = [
-  ['Guia de Progressão por Nível', 'Saiba quais habilidades observar antes de avançar o aluno e tenha uma referência rápida para acompanhar cada fase.', 'https://i.postimg.cc/CxWJPrzS/imagem-2026-08-09-192430121.png'],
-  ['Mapa SOS — Meu Aluno Está Travado', 'Encontre rapidamente quais atividades consultar quando perceber dificuldades específicas.', 'https://i.postimg.cc/V6stDXBc/imagem-2026-08-09-192742900.png'],
-  ['Ficha de Evolução do Aluno', 'Organize as habilidades já desenvolvidas, as que estão em progresso e qual será o próximo foco.', 'https://i.postimg.cc/Y2GZtPWL/imagem-2026-08-09-195504993.png'],
-  ['+30 Aulas Lúdicas', 'Atividades divertidas com objetivo pedagógico para variar as aulas sem transformar a piscina em bagunça.', 'https://i.postimg.cc/9fkbSW1z/imagem-2026-08-09-195732014.png'],
-  ['20 Aulas Completas', 'Roteiros completos de 30, 45 e 60 minutos para os dias em que você quer abrir e aplicar uma aula inteira.', 'https://i.postimg.cc/8Cxd4Zzg/imagem-2026-08-09-200011582.png'],
+  ['Guia de Progressão por Nível', 'Saiba quais habilidades observar antes de avançar o aluno e tenha uma referência rápida para acompanhar cada fase.', '/assets/bonus-01.webp'],
+  ['Mapa SOS — Meu Aluno Está Travado', 'Encontre rapidamente quais atividades consultar quando perceber dificuldades específicas.', '/assets/bonus-02.webp'],
+  ['Ficha de Evolução do Aluno', 'Organize as habilidades já desenvolvidas, as que estão em progresso e qual será o próximo foco.', '/assets/bonus-03.webp'],
+  ['+30 Aulas Lúdicas', 'Atividades divertidas com objetivo pedagógico para variar as aulas sem transformar a piscina em bagunça.', '/assets/bonus-04.webp'],
+  ['20 Aulas Completas', 'Roteiros completos de 30, 45 e 60 minutos para os dias em que você quer abrir e aplicar uma aula inteira.', '/assets/bonus-05.webp'],
 ];
-const productMockup = 'https://i.postimg.cc/6pX9sbrq/imagem-2026-08-09-134241000.png';
+const productMockup = '/assets/product-mockup.webp';
 const bonusPricing = {
   bonus1: 'R$ 19,90',
   bonus2: 'R$ 27,90',
@@ -36,16 +36,16 @@ const bonusValueItems = [
   { name: '20 Aulas Completas', value: bonusPricing.bonus5 },
 ];
 const pages = [
-  'https://i.postimg.cc/brszvv8B/imagem-2026-08-09-190742535.png',
-  'https://i.postimg.cc/jSVssK1F/imagem-2026-08-09-190831820.png',
-  'https://i.postimg.cc/0jMssH0g/imagem-2026-08-09-190922753.png',
-  'https://i.postimg.cc/pdWMTdJ5/imagem-2026-08-09-191014374.png',
-  'https://i.postimg.cc/2js654bF/imagem-2026-08-09-191112279.png',
-  'https://i.postimg.cc/X7KV7t6H/imagem-2026-08-09-191304973.png',
-  'https://i.postimg.cc/2yQfyLMW/imagem-2026-08-09-191424358.png',
-  'https://i.postimg.cc/5tDcmmMC/imagem-2026-08-09-191645610.png',
-  'https://i.postimg.cc/90Vnx8gp/imagem-2026-08-09-192007445.png',
-  'https://i.postimg.cc/28kthtBt/imagem-2026-08-09-192049629.png',
+  '/assets/carousel/page-01.webp',
+  '/assets/carousel/page-02.webp',
+  '/assets/carousel/page-03.webp',
+  '/assets/carousel/page-04.webp',
+  '/assets/carousel/page-05.webp',
+  '/assets/carousel/page-06.webp',
+  '/assets/carousel/page-07.webp',
+  '/assets/carousel/page-08.webp',
+  '/assets/carousel/page-09.webp',
+  '/assets/carousel/page-10.webp',
 ];
 const basicItems = [['yes', OFFER.name], ['yes', 'Material ilustrado'], ['yes', 'Organização por nível'], ['yes', 'Consulta rápida'], ['yes', 'Acesso digital imediato'], ['no', 'Guia de Progressão'], ['no', 'Mapa SOS'], ['no', 'Ficha de Evolução'], ['no', '+30 Aulas Lúdicas'], ['no', '20 Aulas Completas']];
 const completeItems = [OFFER.name, 'Guia de Progressão', 'Mapa SOS — Meu Aluno Está Travado', 'Ficha de Evolução do Aluno', '+30 Aulas Lúdicas', '20 Aulas Completas de 30, 45 e 60 minutos', 'Material ilustrado', 'Consulta rápida', 'Acesso digital imediato'];
@@ -63,7 +63,7 @@ const faqs = [
 const clock = (seconds) => [Math.floor(seconds / 3600), Math.floor(seconds % 3600 / 60), seconds % 60].map((n) => String(n).padStart(2, '0')).join(':');
 function CountdownBar() { const [remaining, setRemaining] = useState(25 * 60); useEffect(() => { const id = setInterval(() => setRemaining((time) => Math.max(0, time - 1)), 1000); return () => clearInterval(id); }, []); return <div className="topCountdown" role="timer" aria-label={'Condição especial disponível hoje, faltam ' + clock(remaining)}><strong>CONDIÇÃO ESPECIAL DISPONÍVEL HOJE</strong><span>•</span><b>FALTAM {clock(remaining)}</b></div>; }
 function Placeholder({ file, description, ratio = '4/3', className = '' }) { return <figure className={'imagePlaceholder ' + className} style={{ '--ratio': ratio }} aria-label={'Placeholder: ' + description}><span className="imageIcon" aria-hidden="true">⌁</span><strong>IMAGEM DO PRODUTO</strong><small>{description}</small><code>{file} · proporção {ratio}</code></figure>; }
-function ProductImage({ className = '', alt, ratio = '1/1' }) { return <figure className={'productArtwork ' + className} style={{ '--ratio': ratio }}><img src={productMockup} alt={alt} loading="eager" /></figure>; }
+function ProductImage({ className = '', alt, ratio = '1/1', priority = false }) { return <figure className={'productArtwork ' + className} style={{ '--ratio': ratio }}><img src={productMockup} alt={alt} loading={priority ? 'eager' : 'lazy'} decoding="async" fetchPriority={priority ? 'high' : 'auto'} /></figure>; }
 function DeliverableCarousel() {
   const renderRow = (items, directionClass) => <div className="carouselRow"><div className={'deliverableTrack ' + directionClass}>
     {[0, 1, 2].map((loop) => <div className="deliverableLoopGroup" key={directionClass + '-' + loop}>
@@ -97,10 +97,10 @@ export default function App() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   useEffect(() => { const elements = document.querySelectorAll('.reveal'); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('isVisible'); observer.unobserve(entry.target); } }), { threshold: .1 }); elements.forEach((el) => observer.observe(el)); return () => observer.disconnect(); }, []);
   return <><CountdownBar /><main>
-    <section className="hero reveal"><div className="heroCopy"><h1><span><em>+200 Aulas</em> de Natação Infantil</span><span>Prontas Para Você Abrir e Aplicar</span></h1><p className="lead">Pare de perder tempo planejando aulas do zero e tenha atividades organizadas por nível para consultar sempre que precisar.</p><p className="support">Da adaptação aos primeiros nados — tudo ilustrado, organizado e fácil de consultar.</p></div><div className="heroMedia"><ProductImage alt="Mockup do +200 Aulas de Natação Infantil" /><CTA>QUERO ACESSAR AS +200 AULAS</CTA><p className="microcopy">Acesso digital imediato • Pagamento único</p></div></section>
+    <section className="hero reveal"><div className="heroCopy"><h1><span><em>+200 Aulas</em> de Natação Infantil</span><span>Prontas Para Você Abrir e Aplicar</span></h1><p className="lead">Pare de perder tempo planejando aulas do zero e tenha atividades organizadas por nível para consultar sempre que precisar.</p><p className="support">Da adaptação aos primeiros nados — tudo ilustrado, organizado e fácil de consultar.</p></div><div className="heroMedia"><ProductImage alt="Mockup do +200 Aulas de Natação Infantil" priority /><CTA>QUERO ACESSAR AS +200 AULAS</CTA><p className="microcopy">Acesso digital imediato • Pagamento único</p></div></section>
     <section className="section reveal"><h2>Feito para quem vive a piscina todos os dias</h2><div className="audienceGrid">{audienceCards.map(([title, text]) => <article className="audienceCard" key={title}><span>✓</span><div><h3>{title}</h3><p>{text}</p></div></article>)}</div></section>
     <section className="section demoSection reveal"><p className="eyebrow">VEJA COMO O MATERIAL FUNCIONA</p><h2>Visual, organizado e pronto para consultar</h2><p className="sectionLead">Cada atividade mostra de forma rápida o que trabalhar, como aplicar, materiais necessários, nível e progressões.</p><DeliverableCarousel /><div className="pillRow"><span>Fácil de entender</span><span>Rápido de consultar</span><span>Pronto para aplicar</span><span>Organizado por nível</span></div></section>
-    <section className="section bonusSection reveal"><p className="eyebrow">NO PLANO COMPLETO VOCÊ RECEBE MAIS</p><h2>Não são bônus aleatórios. São ferramentas para o seu dia a dia.</h2><div className="bonusGrid">{bonuses.map(([title, text, src], index) => <article className={'bonusCard ' + (index === 1 ? 'bonusFeatured' : '')} key={title}><span className="bonusNumber">BÔNUS {String(index + 1).padStart(2, '0')}</span><figure className="bonusArtwork"><img src={src} alt={'Capa do bônus: ' + title} loading="lazy" /></figure><h3>{title}</h3><p>{text}</p><div className="bonusPrice"><span>INCLUÍDO NO PLANO COMPLETO</span><strong>GRÁTIS</strong></div></article>)}</div></section>
+    <section className="section bonusSection reveal"><p className="eyebrow">NO PLANO COMPLETO VOCÊ RECEBE MAIS</p><h2>Não são bônus aleatórios. São ferramentas para o seu dia a dia.</h2><div className="bonusGrid">{bonuses.map(([title, text, src], index) => <article className={'bonusCard ' + (index === 1 ? 'bonusFeatured' : '')} key={title}><span className="bonusNumber">BÔNUS {String(index + 1).padStart(2, '0')}</span><figure className="bonusArtwork"><img src={src} alt={'Capa do bônus: ' + title} loading="lazy" decoding="async" /></figure><h3>{title}</h3><p>{text}</p><div className="bonusPrice"><span>INCLUÍDO NO PLANO COMPLETO</span><strong>GRÁTIS</strong></div></article>)}</div></section>
     <BonusValueSection />
     <section className="priceSection" id="planos"><div className="priceIntro reveal"><p className="eyebrow">ACESSO DIGITAL IMEDIATO</p><h2>Escolha como você quer começar</h2><p>Tenha apenas as +200 aulas ou desbloqueie o kit completo de consulta para o professor.</p></div><article className="basicCard reveal"><p className="planEyebrow">PAGAMENTO ÚNICO</p><h3>Plano Básico</h3><p>Para quem quer apenas as +200 aulas prontas.</p><div className="basicPrice">R$ {OFFER.basicPrice}</div><PlanList items={basicItems} basic /><button className="planButton basicButton" type="button" onClick={() => setShowUpgrade(true)}>QUERO O PLANO BÁSICO</button></article><article className="completeCard reveal"><span className="featuredBadge">MAIS ESCOLHIDO</span><p className="planEyebrow">PAGAMENTO ÚNICO</p><h3>Plano Completo</h3><p>Para quem quer as aulas + todas as ferramentas de consulta e acompanhamento.</p><ProductImage className="productImage" ratio="16/9" alt="Mockup do Plano Completo com todos os materiais" /><div className="completePrice">R$ {OFFER.completePrice}</div><PlanList items={completeItems} /><a className="planButton completeButton" href={COMPLETE_CHECKOUT_URL}>QUERO O PLANO COMPLETO</a><p className="microcopy">Pagamento único • Acesso digital imediato</p></article></section>
     <section className="section guarantee reveal"><div className="guaranteeSeal"><strong>7</strong><span>DIAS</span></div><div><h2>Você tem 7 dias para conhecer o material</h2><p>Acesse, confira a organização e veja se o conteúdo faz sentido para o seu dia a dia. Caso não seja o que esperava, você poderá solicitar o reembolso dentro do prazo da garantia.</p></div></section>
