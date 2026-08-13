@@ -1,149 +1,110 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const BASIC_CHECKOUT_URL = 'https://zuckpay.com.br/checkout/200-tecnicas-para-servir-como-um-garcom-profissional-plano-basico';
-const COMPLETE_CHECKOUT_URL = 'https://zuckpay.com.br/checkout/200-tecnicas-para-garcons-plano-completo';
-const UPGRADE_CHECKOUT_URL = 'https://zuckpay.com.br/checkout/200-tecnicas-para-garcons-plano-completo-1';
+// SUBSTITUA PELOS LINKS REAIS DO CHECKOUT
+const OFFER = { name: '+200 Aulas de Natação Infantil por Nível', basicPrice: '10,00', completePrice: '24,90', upgradePrice: '17,90', basicCheckout: 'https://go.perfectpay.com.br/PPU38CQF9FC', completeCheckout: 'https://go.perfectpay.com.br/PPU38CQFAG8', upgradeCheckout: 'https://go.perfectpay.com.br/PPU38CQFAGD' };
+const BASIC_CHECKOUT_URL = OFFER.basicCheckout;
+const COMPLETE_CHECKOUT_URL = OFFER.completeCheckout;
+const UPGRADE_CHECKOUT_URL = OFFER.upgradeCheckout;
 
 const audienceCards = [
-  ['Garçons que estão começando', 'Para quem quer ganhar mais segurança e entender melhor como servir, carregar e recolher no dia a dia.'],
-  ['Quem ainda aprende no improviso', 'Para quem aprendeu observando outros garçons, mas sente que ainda faltam técnicas mais claras e organizadas.'],
-  ['Quem quer ganhar mais agilidade', 'Para quem deseja fazer menos idas e voltas, reduzir movimentos desnecessários e acompanhar melhor o ritmo do salão.'],
-  ['Quem quer passar mais presença', 'Para quem quer parar de parecer inseguro e se movimentar, servir e atender com mais firmeza diante dos clientes.'],
+  ['Professor que não quer planejar tudo do zero', 'Para quem tem várias turmas durante a semana e precisa encontrar rapidamente uma atividade adequada.'],
+  ['Professor com aluno travado', 'Para quem percebe uma dificuldade específica e quer ter outras opções de exercício para experimentar.'],
+  ['Quem está começando na natação infantil', 'Para estagiários e recém-formados que ainda não construíram um repertório grande de atividades.'],
+  ['Professor que quer variar mais as aulas', 'Para quem sente que está repetindo sempre as mesmas atividades e quer aumentar seu repertório.'],
 ];
-
 const bonuses = [
-  { title: 'Guia de Memorização e Agilidade no Salão', text: 'Técnicas simples para organizar mentalmente mesas, pedidos e prioridades, reduzir esquecimentos e trabalhar com mais eficiência.', value: 'R$ 27,00', slot: 'BÔNUS 01 — MEMORIZAÇÃO E AGILIDADE', file: 'bonus-01-memorizacao-agilidade.webp' },
-  { title: 'Checklists do Serviço Profissional', text: 'Listas rápidas para conferir uniforme, praça, mesas, bandeja, pedidos, recolhimento e encerramento do turno.', value: 'R$ 17,00', slot: 'BÔNUS 02 — CHECKLISTS', file: 'bonus-02-checklists.webp' },
-  { title: 'Postura e Presença de um Garçom Profissional', text: 'Aprenda como caminhar, se posicionar, se aproximar da mesa e transmitir mais segurança e elegância durante o atendimento.', value: 'R$ 23,00', slot: 'BÔNUS 03 — POSTURA E PRESENÇA', file: 'bonus-03-postura-presenca.webp' },
-  { title: 'Certificado de Conclusão', text: 'Um certificado digital para preencher após concluir o material de aprimoramento profissional.', value: 'R$ 20,00', slot: 'CERTIFICADO DE CONCLUSÃO', file: 'certificado-conclusao.webp' },
+  ['Guia de Progressão por Nível', 'Saiba quais habilidades observar antes de avançar o aluno e tenha uma referência rápida para acompanhar cada fase.', 'https://i.postimg.cc/CxWJPrzS/imagem-2026-08-09-192430121.png'],
+  ['Mapa SOS — Meu Aluno Está Travado', 'Encontre rapidamente quais atividades consultar quando perceber dificuldades específicas.', 'https://i.postimg.cc/V6stDXBc/imagem-2026-08-09-192742900.png'],
+  ['Ficha de Evolução do Aluno', 'Organize as habilidades já desenvolvidas, as que estão em progresso e qual será o próximo foco.', 'https://i.postimg.cc/Y2GZtPWL/imagem-2026-08-09-195504993.png'],
+  ['+30 Aulas Lúdicas', 'Atividades divertidas com objetivo pedagógico para variar as aulas sem transformar a piscina em bagunça.', 'https://i.postimg.cc/9fkbSW1z/imagem-2026-08-09-195732014.png'],
+  ['20 Aulas Completas', 'Roteiros completos de 30, 45 e 60 minutos para os dias em que você quer abrir e aplicar uma aula inteira.', 'https://i.postimg.cc/8Cxd4Zzg/imagem-2026-08-09-200011582.png'],
 ];
-
-const deliverablePages = Array.from({ length: 9 }, (_, index) => `/assets/deliverable-pages/deliverable-${String(index + 1).padStart(2, '0')}.png`);
-
-const basicItems = [
-  ['yes', '+200 técnicas para Garçons'],
-  ['yes', 'Acesso digital imediato'], ['no', '30 roteiros práticos de serviço'],
-  ['no', 'Guia de Memorização e Agilidade no Salão'], ['no', 'Checklists do Serviço Profissional'],
-  ['no', 'Postura e Presença de um Garçom Profissional'], ['no', 'Certificado de Conclusão'],
+const productMockup = 'https://i.postimg.cc/6pX9sbrq/imagem-2026-08-09-134241000.png';
+const bonusPricing = {
+  bonus1: 'R$ 19,90',
+  bonus2: 'R$ 27,90',
+  bonus3: 'R$ 14,90',
+  bonus4: 'R$ 24,90',
+  bonus5: 'R$ 29,90',
+  total: 'R$ 117,50',
+};
+const bonusValueItems = [
+  { name: 'Guia de Progressão por Nível', value: bonusPricing.bonus1 },
+  { name: 'Mapa SOS — Meu Aluno Está Travado', value: bonusPricing.bonus2 },
+  { name: 'Ficha de Evolução do Aluno', value: bonusPricing.bonus3 },
+  { name: '+30 Aulas Lúdicas', value: bonusPricing.bonus4 },
+  { name: '20 Aulas Completas', value: bonusPricing.bonus5 },
 ];
-
-const completeItems = [
-  '+200 técnicas para Garçons', '30 roteiros práticos de serviço',
-  'Guia de Memorização e Agilidade no Salão', 'Checklists do Serviço Profissional',
-  'Postura e Presença de um Garçom Profissional', 'Certificado de Conclusão',
-  'Acesso digital imediato', 'Pagamento único',
+const pages = [
+  'https://i.postimg.cc/brszvv8B/imagem-2026-08-09-190742535.png',
+  'https://i.postimg.cc/jSVssK1F/imagem-2026-08-09-190831820.png',
+  'https://i.postimg.cc/0jMssH0g/imagem-2026-08-09-190922753.png',
+  'https://i.postimg.cc/pdWMTdJ5/imagem-2026-08-09-191014374.png',
+  'https://i.postimg.cc/2js654bF/imagem-2026-08-09-191112279.png',
+  'https://i.postimg.cc/X7KV7t6H/imagem-2026-08-09-191304973.png',
+  'https://i.postimg.cc/2yQfyLMW/imagem-2026-08-09-191424358.png',
+  'https://i.postimg.cc/5tDcmmMC/imagem-2026-08-09-191645610.png',
+  'https://i.postimg.cc/90Vnx8gp/imagem-2026-08-09-192007445.png',
+  'https://i.postimg.cc/28kthtBt/imagem-2026-08-09-192049629.png',
 ];
-
+const basicItems = [['yes', OFFER.name], ['yes', 'Material ilustrado'], ['yes', 'Organização por nível'], ['yes', 'Consulta rápida'], ['yes', 'Acesso digital imediato'], ['no', 'Guia de Progressão'], ['no', 'Mapa SOS'], ['no', 'Ficha de Evolução'], ['no', '+30 Aulas Lúdicas'], ['no', '20 Aulas Completas']];
+const completeItems = [OFFER.name, 'Guia de Progressão', 'Mapa SOS — Meu Aluno Está Travado', 'Ficha de Evolução do Aluno', '+30 Aulas Lúdicas', '20 Aulas Completas de 30, 45 e 60 minutos', 'Material ilustrado', 'Consulta rápida', 'Acesso digital imediato'];
 const faqs = [
-  ['O material é físico ou digital?', 'É digital. Após a compra, você recebe o acesso e pode consultar o material pelo celular, computador ou tablet.'],
-  ['É indicado para quem já trabalha como garçom?', 'Sim. O foco é ajudar garçons que já conhecem o básico e querem aprimorar a forma de servir, recolher, se movimentar e se posicionar.'],
-  ['Serve para restaurantes, bares, hotéis, buffets e eventos?', 'Sim. O material reúne técnicas aplicáveis em diferentes ambientes de atendimento e serviço.'],
-  ['Preciso assistir aulas longas?', 'Não. O conteúdo é visual, direto e organizado para consulta rápida.'],
-  ['As técnicas são fáceis de aplicar?', 'As técnicas possuem orientações curtas e foco em aplicação prática. Cada profissional deve respeitar as regras, os padrões e os limites de segurança do local onde trabalha.'],
-  ['Os 30 roteiros estão incluídos?', 'Sim. Os 30 roteiros práticos fazem parte do produto principal.'],
-  ['O acesso é imediato?', 'Sim. Após a confirmação do pagamento, o acesso é liberado digitalmente.'],
-  ['Tem certificado?', 'Sim. O certificado de conclusão está incluído no Plano Completo.'],
+  ['O material é físico ou digital?', 'É digital. Após a confirmação do pagamento, o acesso é disponibilizado para consulta em celular, computador ou tablet.'],
+  ['É um curso?', 'Não. É um material visual de consulta com aulas e atividades prontas.'],
+  ['Preciso seguir as aulas em ordem?', 'Não. Você pode procurar pelo nível ou pela habilidade que deseja trabalhar.'],
+  ['Serve para quem já trabalha com natação infantil?', 'Sim. O material foi pensado principalmente para profissionais que desejam aumentar o repertório e reduzir tempo de planejamento.'],
+  ['Serve para quem está começando?', 'Sim. A organização por nível facilita a consulta para quem ainda está construindo repertório.'],
+  ['Posso usar pelo celular?', 'Sim. O layout do material é pensado para consulta digital rápida.'],
+  ['O Plano Básico possui os bônus?', 'Não. O Básico entrega as +200 aulas. As ferramentas extras estão no Plano Completo.'],
+  ['Recebo imediatamente?', 'O acesso digital deve ser liberado após a confirmação do pagamento, conforme funcionamento da plataforma utilizada.'],
+  ['Posso aplicar exatamente igual para todas as crianças?', 'Não. O profissional deve adaptar qualquer atividade considerando idade, nível aquático, ambiente, profundidade, segurança e necessidades individuais.'],
 ];
-
-function getBrasiliaRemaining() {
-  const parts = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(new Date());
-  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-  const elapsed = Number(values.hour === '24' ? 0 : values.hour) * 3600 + Number(values.minute) * 60 + Number(values.second);
-  return Math.max(0, 86400 - elapsed);
-}
-
-const formatTime = (seconds) => [Math.floor(seconds / 3600), Math.floor((seconds % 3600) / 60), seconds % 60].map((n) => String(n).padStart(2, '0')).join(':');
-
-function CountdownBar() {
-  const [remaining, setRemaining] = useState(getBrasiliaRemaining());
-  useEffect(() => { const timer = setInterval(() => setRemaining(getBrasiliaRemaining() || 86400), 1000); return () => clearInterval(timer); }, []);
-  return <div className="topCountdown" role="timer" aria-label={`Oferta exclusiva apenas hoje, faltam ${formatTime(remaining)}`}><strong>OFERTA EXCLUSIVA APENAS HOJE</strong><span>•</span><b>FALTAM {formatTime(remaining)}</b></div>;
-}
-
-function ImagePlaceholder({ label, hint, ratio = '4/3', file, className = '' }) {
-  const assetBySlot = {
-    'bonus-01-memorizacao-agilidade.webp': '/assets/bonus-01.png',
-    'bonus-02-checklists.webp': '/assets/bonus-02.png',
-    'bonus-03-postura-presenca.webp': '/assets/bonus-03.png',
-    'certificado-conclusao.webp': '/assets/bonus-04.png',
-    'plano-completo.webp': 'https://i.postimg.cc/sx6tWJy8/Chat-GPT-Image-16-de-jul-de-2026-16-57-24-removebg-preview.png',
-    'selos-formas-pagamento.webp': '/assets/checkout-seguranca-opt.png',
-  };
-  const asset = assetBySlot[file];
-  if (asset) return <figure className={`imagePlaceholder imageAsset ${className}`} style={{ '--ratio': ratio }} aria-label={`${label}: ${hint}`}>
-    <img src={asset} alt={hint} loading="lazy" />
-  </figure>;
-  // Arquivo futuro sugerido é informado em cada uso via propriedade `file`.
-  return <figure className={`imagePlaceholder ${className}`} style={{ '--ratio': ratio }} data-image-slot={label} aria-label={`${label}: ${hint}`}>
-    <span className="imageIcon" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="4" y="5" width="24" height="22" rx="3"/><circle cx="11" cy="12" r="2"/><path d="m7 23 6-6 4 4 3-3 5 5"/></svg></span>
-    <strong>{label}</strong><small>{hint}</small><code>{file}</code>
-  </figure>;
-}
-
+const clock = (seconds) => [Math.floor(seconds / 3600), Math.floor(seconds % 3600 / 60), seconds % 60].map((n) => String(n).padStart(2, '0')).join(':');
+function CountdownBar() { const [remaining, setRemaining] = useState(25 * 60); useEffect(() => { const id = setInterval(() => setRemaining((time) => Math.max(0, time - 1)), 1000); return () => clearInterval(id); }, []); return <div className="topCountdown" role="timer" aria-label={'Condição especial disponível hoje, faltam ' + clock(remaining)}><strong>CONDIÇÃO ESPECIAL DISPONÍVEL HOJE</strong><span>•</span><b>FALTAM {clock(remaining)}</b></div>; }
+function Placeholder({ file, description, ratio = '4/3', className = '' }) { return <figure className={'imagePlaceholder ' + className} style={{ '--ratio': ratio }} aria-label={'Placeholder: ' + description}><span className="imageIcon" aria-hidden="true">⌁</span><strong>IMAGEM DO PRODUTO</strong><small>{description}</small><code>{file} · proporção {ratio}</code></figure>; }
+function ProductImage({ className = '', alt, ratio = '1/1' }) { return <figure className={'productArtwork ' + className} style={{ '--ratio': ratio }}><img src={productMockup} alt={alt} loading="eager" /></figure>; }
 function DeliverableCarousel() {
-  const renderRow = (items, className) => <div className="carouselRow" aria-hidden="true"><div className={`deliverableTrack ${className}`}>
-    {[0, 1, 2].map((loop) => <div className="deliverableLoopGroup" key={`${className}-group-${loop}`}>{items.map((src, index) => <figure className="deliverablePreview" key={`${className}-${loop}-${index}`}><img src={src} alt="" loading="eager" decoding="async" fetchPriority={index === 0 && loop === 0 ? 'high' : 'low'} /></figure>)}</div>)}
+  const renderRow = (items, directionClass) => <div className="carouselRow"><div className={'deliverableTrack ' + directionClass}>
+    {[0, 1, 2].map((loop) => <div className="deliverableLoopGroup" key={directionClass + '-' + loop}>
+      {items.map((src, index) => <figure className="deliverablePreview" key={String(loop) + '-' + index}><img src={src} alt="" loading="lazy" decoding="async" /></figure>)}
+    </div>)}
   </div></div>;
   return <div className="deliverableCarousel" role="group" aria-label="Prévia de páginas internas do material">
-    <div className="carouselGlow" aria-hidden="true" />
-    <div className="deliverableViewport">{renderRow(deliverablePages.slice(0, 5), 'trackForward')}{renderRow(deliverablePages.slice(5), 'trackReverse')}</div>
+    <div className="deliverableViewport">{renderRow(pages.slice(0, 5), 'trackForward')}{renderRow(pages.slice(5), 'trackReverse')}</div>
   </div>;
 }
-
-function scrollToPlans(event) { event?.preventDefault(); document.getElementById('checkout')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-
-function CTA({ children, className = '' }) { return <a href="#checkout" className={`cta ${className}`} onClick={scrollToPlans}>{children}</a>; }
-
-function PlanList({ items, basic = false }) { return <ul className="planList">{items.map((item) => { const [type, text] = basic ? item : ['yes', item]; return <li className={type === 'no' ? 'notIncluded' : ''} key={text}><span className="planIcon" aria-hidden="true">{type === 'no' ? '×' : '✓'}</span><span className="planItemText">{text}</span></li>; })}</ul>; }
-
-function UpgradeModal({ onClose }) {
-  return <div className="upgradeOverlay" role="presentation" onMouseDown={onClose}>
-    <section className="upgradeModal" role="dialog" aria-modal="true" aria-labelledby="upgrade-title" onMouseDown={(event) => event.stopPropagation()}>
-      <button className="upgradeClose" type="button" onClick={onClose} aria-label="Fechar oferta">×</button>
-      <p className="upgradeEyebrow">OFERTA ESPECIAL</p><h2 id="upgrade-title">Leve o Plano Completo por R$ 17,90</h2>
-      <p>Por apenas R$ 7,90 a mais, você desbloqueia tudo o que deixa o serviço mais organizado, elegante e seguro.</p>
-      <img src="https://i.postimg.cc/sx6tWJy8/Chat-GPT-Image-16-de-jul-de-2026-16-57-24-removebg-preview.png" alt="Plano Completo com técnicas e materiais complementares" />
-      <p className="upgradeValueCopy">Você leva os 4 bônus que, juntos, normalmente custam <b>R$ 87,00</b> — além das 200 técnicas e dos roteiros práticos.</p>
-      <ul><li>+200 técnicas visuais</li><li>30 roteiros práticos</li><li>4 bônus incluídos</li><li>Certificado de conclusão</li></ul>
-      <strong>R$ 17,90</strong><a className="upgradeButton" href={UPGRADE_CHECKOUT_URL}>QUERO O PLANO COMPLETO</a>
-      <a className="upgradeDecline" href={BASIC_CHECKOUT_URL}>Continuar apenas com o Plano Básico</a>
-    </section>
-  </div>;
+function CTA({ children }) { return <a href="#planos" className="cta" onClick={(e) => { e.preventDefault(); document.getElementById('planos')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>{children}</a>; }
+function PlanList({ items, basic = false }) { return <ul className="planList">{items.map((item) => { const [type, text] = basic ? item : ['yes', item]; return <li className={type === 'no' ? 'notIncluded' : ''} key={text}><span>{type === 'no' ? '×' : '✓'}</span>{text}</li>; })}</ul>; }
+function BonusValueSection() {
+  const scrollToPlans = (event) => { event.preventDefault(); document.getElementById('planos')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  return <section className="bonusValueSection reveal" aria-label="Valor total dos bônus"><article className="bonusValueCard">
+    <span className="bonusValueTag">PRESENTES INCLUÍDOS</span>
+    <h2>Somando tudo o que você vai levar:</h2>
+    <div className="bonusValueList">{bonusValueItems.map((item) => <div className="bonusValueRow" key={item.name}><span>{item.name}</span><strong>{item.value}</strong></div>)}</div>
+    <div className="bonusValueTotal"><span>VALOR TOTAL DOS BÔNUS</span><strong><s>{bonusPricing.total}</s></strong></div>
+    <p>Mas hoje, tudo sairá por:</p>
+    <b>R$ 0 <small>(GRÁTIS)</small></b>
+    <a href="#planos" className="bonusValueButton" onClick={scrollToPlans}>VER O PLANO COMPLETO</a>
+  </article></section>;
 }
-
+function UpgradeModal({ close }) {
+  const modalRef = useRef(null);
+  useEffect(() => { const previous = document.body.style.overflow; document.body.style.overflow = 'hidden'; const handler = (event) => { if (event.key === 'Escape') close(); if (event.key === 'Tab') { const f = modalRef.current?.querySelectorAll('button,a'); if (!f?.length) return; const first = f[0], last = f[f.length - 1]; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } } }; document.addEventListener('keydown', handler); modalRef.current?.querySelector('button')?.focus(); return () => { document.body.style.overflow = previous; document.removeEventListener('keydown', handler); }; }, [close]);
+  return <div className="upgradeOverlay" onMouseDown={close}><section className="upgradeModal" ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="upgrade-title" onMouseDown={(e) => e.stopPropagation()}><button className="upgradeClose" type="button" onClick={close} aria-label="Fechar oferta">×</button><p className="upgradeEyebrow">ANTES DE CONTINUAR...</p><h2 id="upgrade-title">Leve o Plano Completo por apenas R$ {OFFER.upgradePrice}</h2><p>Uma condição especial disponível somente neste passo.</p><div className="upgradePricing"><s>R$ {OFFER.completePrice}</s><strong>R$ {OFFER.upgradePrice}</strong><span>Você economiza R$ 7,00</span></div><h3>Por apenas R$ 7,90 a mais que o Plano Básico</h3><ProductImage ratio="16/9" alt="Mockup do produto principal e dos materiais do Plano Completo" /><p className="upgradeValueCopy">Antes de seguir apenas com as +200 aulas, você pode liberar o Plano Completo por uma condição especial.</p><p className="upgradeValueCopy">Por apenas R$ 7,90 a mais, você também recebe as ferramentas que ajudam a encontrar atividades quando um aluno trava, acompanhar evolução e até abrir aulas completas prontas.</p><ul>{completeItems.slice(0, 6).map((item) => <li key={item}>✓ {item}</li>)}</ul><div className="comparison"><div><span>VOCÊ JÁ IA PAGAR</span><b>R$ {OFFER.basicPrice}</b></div><div><span>POR APENAS</span><b>+ R$ 7,90</b></div><div><span>VOCÊ LEVA O PLANO COMPLETO</span><b>R$ {OFFER.upgradePrice}</b></div></div><a className="upgradeButton" href={UPGRADE_CHECKOUT_URL}>SIM, QUERO O PLANO COMPLETO POR R$ {OFFER.upgradePrice}</a><a className="upgradeDecline" href={BASIC_CHECKOUT_URL}>Não, quero continuar apenas com o Plano Básico por R$ {OFFER.basicPrice}</a></section></div>;
+}
 export default function App() {
   const [showUpgrade, setShowUpgrade] = useState(false);
-  useEffect(() => {
-    const elements = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('isVisible'); observer.unobserve(entry.target); } }), { threshold: .12, rootMargin: '0px 0px -35px' });
-    elements.forEach((el) => observer.observe(el)); return () => observer.disconnect();
-  }, []);
-
-  return <>
-    <CountdownBar />
-    <main>
-      <section className="hero reveal">
-        <div className="heroCopy"><h1><span><em>+200 Técnicas</em> para Garçons</span><span>servirem com mais agilidade e presença</span></h1><p className="lead">Um material visual, direto e fácil de aplicar para garçons que querem servir, recolher e se movimentar com mais rapidez, elegância e segurança.</p></div>
-        <div className="heroMedia"><img className="heroImage" src="https://i.postimg.cc/YSzgCLqK/Chat-GPT-Image-16-de-jul-de-2026-16-45-27.png" alt="Material com mais de 200 técnicas para servir como um garçom profissional" width="600" height="800" loading="eager" fetchPriority="high" /><CTA className="primaryPulse">ACESSAR AS TÉCNICAS</CTA><p className="microcopy">Acesso digital imediato • Pagamento único</p></div>
-      </section>
-
-      <section className="section reveal"><h2>Para quem é este material?</h2><div className="audienceGrid">{audienceCards.map(([title, text]) => <article className="audienceCard" key={title}><span className="check">✓</span><div><h3>{title}</h3><p>{text}</p></div></article>)}</div></section>
-
-      <section className="section demoSection reveal"><p className="eyebrow">CONTEÚDO PARA O PRÓXIMO TURNO</p><h2>Visual, organizado e pronto para aplicar</h2><p className="sectionLead">As técnicas são apresentadas de forma rápida e demonstrativa para você entender o movimento, consultar pelo celular e aplicar no próximo turno.</p><DeliverableCarousel /><div className="pillRow"><span>Fácil de entender</span><span>Rápido de consultar</span><span>Pronto para aplicar</span></div></section>
-
-      <section className="section bonusSection reveal"><p className="eyebrow">BÔNUS DO PLANO COMPLETO</p><h2>Além das +200 técnicas, você também recebe</h2><div className="bonusGrid">{bonuses.map((bonus, index) => <article className="bonusCard" key={bonus.title}><span className="bonusNumber">BÔNUS {String(index + 1).padStart(2, '0')}</span><ImagePlaceholder label={bonus.slot} hint="Capa visual do bônus" file={bonus.file} /><h3>{bonus.title}</h3><p>{bonus.text}</p><div className="bonusPrice"><s>{bonus.value}</s><strong>GRÁTIS</strong></div></article>)}</div><div className="bonusTotal"><span className="bonusTotalTag">PRESENTES INCLUÍDOS</span><h3>Somando tudo o que você vai levar:</h3><div className="bonusBreakdown">{bonuses.map((bonus, index) => <div key={bonus.title}><span>Bônus {String(index + 1).padStart(2, '0')}</span><s>{bonus.value}</s></div>)}</div><div className="bonusSum"><span>VALOR TOTAL DOS BÔNUS</span><strong>R$ 87,00</strong></div><p>Mas hoje, tudo sairá por:</p><b>R$ 0 <small>(GRÁTIS)</small></b></div></section>
-
-      <section className="priceSection" id="checkout"><div className="priceIntro reveal"><p className="eyebrow">ACESSO DIGITAL IMEDIATO</p><h2>Escolha seu acesso</h2><p>Comece pelo material principal ou leve o aprimoramento completo com todos os bônus.</p></div>
-        <article className="basicCard reveal"><p className="planEyebrow">PAGAMENTO ÚNICO</p><h3>Plano Básico</h3><p>Para acessar apenas o material principal</p><div className="basicPrice">R$ 10,00</div><PlanList items={basicItems} basic /><button className="planButton basicButton" type="button" onClick={() => setShowUpgrade(true)}>QUERO APENAS O PLANO BÁSICO</button></article>
-        <article className="completeCard reveal"><span className="featuredBadge">MAIS ESCOLHIDO</span><p className="planEyebrow">PAGAMENTO ÚNICO</p><h3>Plano Completo</h3><p>Para ter o aprimoramento completo com todos os bônus</p><ImagePlaceholder className="productImage" label="IMAGEM DO PLANO COMPLETO" hint="Composição do produto e todos os bônus" ratio="16/9" file="plano-completo.webp" /><p className="priceAnchor">De R$ 97,00, por apenas:</p><div className="completePrice">R$ 27,90</div><PlanList items={completeItems} /><a className="planButton completeButton" href={COMPLETE_CHECKOUT_URL}>QUERO O PLANO COMPLETO</a><p className="microcopy">Acesso imediato • Pagamento seguro</p></article>
-      </section>
-
-      <section className="section guarantee reveal"><div className="guaranteeSeal"><strong>7</strong><span>DIAS</span></div><div><h2>Garantia simples de 7 dias</h2><p>Você pode acessar o material e conferir se ele faz sentido para o seu aprimoramento. Se não for o que esperava, poderá solicitar o reembolso dentro do prazo de garantia.</p></div></section>
-
-      <section className="section faqSection reveal"><p className="eyebrow">DÚVIDAS FREQUENTES</p><h2>Perguntas frequentes</h2><div className="faqGrid">{faqs.map(([question, answer]) => <details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
-
-      <section className="finalCta reveal"><p className="eyebrow">ELEVE O SEU SERVIÇO</p><h2>Aprenda os detalhes que fazem o serviço parecer muito mais profissional</h2><p>Tenha técnicas visuais e práticas para servir, recolher e atender com mais agilidade, segurança e elegância.</p><CTA>QUERO ME APRIMORAR AGORA</CTA></section>
-      <footer>As técnicas devem ser aplicadas respeitando os protocolos, utensílios, regras de higiene e padrões de cada estabelecimento.</footer>
-    </main>{showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
-  </>;
+  useEffect(() => { const elements = document.querySelectorAll('.reveal'); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('isVisible'); observer.unobserve(entry.target); } }), { threshold: .1 }); elements.forEach((el) => observer.observe(el)); return () => observer.disconnect(); }, []);
+  return <><CountdownBar /><main>
+    <section className="hero reveal"><div className="heroCopy"><h1><span><em>+200 Aulas</em> de Natação Infantil</span><span>Prontas Para Você Abrir e Aplicar</span></h1><p className="lead">Pare de perder tempo planejando aulas do zero e tenha atividades organizadas por nível para consultar sempre que precisar.</p><p className="support">Da adaptação aos primeiros nados — tudo ilustrado, organizado e fácil de consultar.</p></div><div className="heroMedia"><ProductImage alt="Mockup do +200 Aulas de Natação Infantil" /><CTA>QUERO ACESSAR AS +200 AULAS</CTA><p className="microcopy">Acesso digital imediato • Pagamento único</p></div></section>
+    <section className="section reveal"><h2>Feito para quem vive a piscina todos os dias</h2><div className="audienceGrid">{audienceCards.map(([title, text]) => <article className="audienceCard" key={title}><span>✓</span><div><h3>{title}</h3><p>{text}</p></div></article>)}</div></section>
+    <section className="section demoSection reveal"><p className="eyebrow">VEJA COMO O MATERIAL FUNCIONA</p><h2>Visual, organizado e pronto para consultar</h2><p className="sectionLead">Cada atividade mostra de forma rápida o que trabalhar, como aplicar, materiais necessários, nível e progressões.</p><DeliverableCarousel /><div className="pillRow"><span>Fácil de entender</span><span>Rápido de consultar</span><span>Pronto para aplicar</span><span>Organizado por nível</span></div></section>
+    <section className="section bonusSection reveal"><p className="eyebrow">NO PLANO COMPLETO VOCÊ RECEBE MAIS</p><h2>Não são bônus aleatórios. São ferramentas para o seu dia a dia.</h2><div className="bonusGrid">{bonuses.map(([title, text, src], index) => <article className={'bonusCard ' + (index === 1 ? 'bonusFeatured' : '')} key={title}><span className="bonusNumber">BÔNUS {String(index + 1).padStart(2, '0')}</span><figure className="bonusArtwork"><img src={src} alt={'Capa do bônus: ' + title} loading="lazy" /></figure><h3>{title}</h3><p>{text}</p><div className="bonusPrice"><span>INCLUÍDO NO PLANO COMPLETO</span><strong>GRÁTIS</strong></div></article>)}</div></section>
+    <BonusValueSection />
+    <section className="priceSection" id="planos"><div className="priceIntro reveal"><p className="eyebrow">ACESSO DIGITAL IMEDIATO</p><h2>Escolha como você quer começar</h2><p>Tenha apenas as +200 aulas ou desbloqueie o kit completo de consulta para o professor.</p></div><article className="basicCard reveal"><p className="planEyebrow">PAGAMENTO ÚNICO</p><h3>Plano Básico</h3><p>Para quem quer apenas as +200 aulas prontas.</p><div className="basicPrice">R$ {OFFER.basicPrice}</div><PlanList items={basicItems} basic /><button className="planButton basicButton" type="button" onClick={() => setShowUpgrade(true)}>QUERO O PLANO BÁSICO</button></article><article className="completeCard reveal"><span className="featuredBadge">MAIS ESCOLHIDO</span><p className="planEyebrow">PAGAMENTO ÚNICO</p><h3>Plano Completo</h3><p>Para quem quer as aulas + todas as ferramentas de consulta e acompanhamento.</p><ProductImage className="productImage" ratio="16/9" alt="Mockup do Plano Completo com todos os materiais" /><div className="completePrice">R$ {OFFER.completePrice}</div><PlanList items={completeItems} /><a className="planButton completeButton" href={COMPLETE_CHECKOUT_URL}>QUERO O PLANO COMPLETO</a><p className="microcopy">Pagamento único • Acesso digital imediato</p></article></section>
+    <section className="section guarantee reveal"><div className="guaranteeSeal"><strong>7</strong><span>DIAS</span></div><div><h2>Você tem 7 dias para conhecer o material</h2><p>Acesse, confira a organização e veja se o conteúdo faz sentido para o seu dia a dia. Caso não seja o que esperava, você poderá solicitar o reembolso dentro do prazo da garantia.</p></div></section>
+    <section className="section faqSection reveal"><p className="eyebrow">DÚVIDAS FREQUENTES</p><h2>Perguntas frequentes</h2><div className="faqGrid">{faqs.map(([question, answer]) => <details key={question}><summary>{question}<span>+</span></summary><p>{answer}</p></details>)}</div></section>
+    <section className="finalCta reveal"><p className="eyebrow">SUA PRÓXIMA AULA NÃO PRECISA COMEÇAR DO ZERO</p><h2>Tenha mais de 200 opções prontas sempre que abrir o celular</h2><p>Escolha o nível, encontre a atividade e adapte para sua turma.</p><CTA>QUERO ACESSAR AS AULAS</CTA></section><footer>As atividades devem ser adaptadas e aplicadas por profissional responsável, considerando nível aquático, idade, profundidade, supervisão e protocolos de segurança do local.<nav><a href="#">Termos de Uso</a><a href="#">Política de Privacidade</a><a href="#">Contato</a></nav></footer>
+  </main>{showUpgrade && <UpgradeModal close={() => setShowUpgrade(false)} />}</>;
 }
