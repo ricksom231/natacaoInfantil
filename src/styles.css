@@ -116,7 +116,6 @@ h3 { line-height: 1.2; }
 .bonusSection > h2 { max-width: 720px; margin-inline: auto; }
 .bonusGrid { max-width: 1100px; margin: 26px auto 0; }
 .bonusCard { position: relative; display: flex; flex-direction: column; padding: 16px; border: 1px solid var(--color-border); border-radius: 18px; background: var(--color-white); box-shadow: var(--shadow); }
-.bonusNumber { position: absolute; z-index: 2; top: 26px; left: 26px; padding: 6px 9px; border-radius: 6px; background: var(--color-gold); color: var(--color-charcoal); font-size: .62rem; font-weight: 800; letter-spacing: .08em; }
 .bonusCard .imagePlaceholder { margin: 0 0 18px; }
 .bonusPrice { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
 .bonusPrice s { color: var(--color-muted); font-size: .82rem; }
